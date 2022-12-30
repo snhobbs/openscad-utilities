@@ -17,3 +17,7 @@ function make_odd_mounting_holes(fastener_name, size) = let(fastener=get_fastene
 // Odd spaced line of holes at x=0
 function make_linear_odd_mounting_holes(fastener_name, length, spacing, x=0) = let(fastener=get_fastener(fastener_name), n=floor(length/spacing))[for(i = [-floor(n/2):floor(n/2)]) [fastener,[x,i*(spacing)]]];
 
+module make_mounting_hole(mounting_hole, through_all_height=1000) {
+    through_hole(mounting_hole, through_all_height=through_all_height);
+};
+
