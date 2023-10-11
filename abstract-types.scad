@@ -4,9 +4,9 @@
 */
 
 
-module square_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20,-30]]]) {
+module square_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20,-30]]], center=true) {
     difference() {
-        square([size[0], size[1]], center=true);
+        square([size[0], size[1]], center=center);
         for(hole=holes)translate([hole[1][0], hole[1][1]])circle(d=hole[0]);
     };
 };
