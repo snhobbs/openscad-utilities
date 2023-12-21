@@ -1,4 +1,4 @@
-module rounded_rectangle(width = 1, height = 1, rounding = 0) {
+module rounded_rectangle(width = 1, height = 1, rounding = 0, $fn=32) {
 	if (rounding > 0) {
 		non_rounded_width = width - 2*rounding;
 		non_rounded_height = height - 2*rounding;
@@ -8,7 +8,7 @@ module rounded_rectangle(width = 1, height = 1, rounding = 0) {
 			minkowski() {
 				square([non_rounded_width, non_rounded_height], center = true);
 				translate([non_rounded_width/2, non_rounded_height/2, 0])
-					circle(rounding, $fn = 32);
+					circle(rounding, $fn = $fn);
 			}
 	} else {
 		// minkowski doesn't work properly on circle with diameter 0
