@@ -88,8 +88,8 @@ module square_with_corner_reliefs(args) {
         square(size, center=true);
         for(pt = [[-1,-1],[1,-1],[-1,1],[1,1]]) {
             translate([
-                pt.x*(size.x/2-sqrt(corner_diameter)/2),
-                pt.y*(size.y/2-sqrt(corner_diameter)/2)])
+                pt.x*(size.x/2-corner_diameter/2/sqrt(2)),
+                pt.y*(size.y/2-corner_diameter/2/sqrt(2))])
                     circle(d=corner_diameter);
         }
     };
