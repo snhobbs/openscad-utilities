@@ -94,6 +94,6 @@ module make_shape_with_holes(shape, holes) {
 module make_transformed_shape(shape, rotated=0, mirrored=false, position=[0,0]) {
     mirror(mirrored ? [0,1,0]:[0,0,0])
     rotate([0,0,rotated])
-    translate([-position.x, -position.y])
+    translate([position.x, position.y])
     make_shape(shape);
 };
