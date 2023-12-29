@@ -1,6 +1,6 @@
 /*
-  Collection of commonly used abstractions, modules for creating objects in a standard way.
-
+  file: abstract-types.scad
+  description: Expressive functions for 2D shapes and alterations to them.
 */
 
 use<openscad-utilities/rounded_rectangle.scad>
@@ -23,4 +23,3 @@ module rounded_rectangle_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20
 module rectangular_plate_with_holes(size=[100,100,1], holes=[[3, [20,30]], [3, [20,-30]]]) {
     linear_extrude(height=size[2], center=true)square_with_holes([size[0], size[1]], holes);
 };
-
