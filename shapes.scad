@@ -92,7 +92,13 @@ module make_shape_with_holes(shape, holes) {
 };
 
 module make_transformed_shape(shape, rotated=0, mirrored=false, position=[0,0]) {
-    mirror(mirrored ? [0,1,0]:[0,0,0])
+    assert(is_num(rotated));
+    assert(is_list(position));
+    assert(is_num(position[0]));
+    assert(is_num(position[1]));
+
+    mirrored_ = (is_bool(mirrored) || is_num(mirrored)) && mirrored;
+    mirror(mirrored_ ? [0,1,0]:[0,0,0])
     rotate([0,0,rotated])
     translate([position.x, position.y])
     make_shape(shape);
