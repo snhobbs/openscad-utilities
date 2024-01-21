@@ -3,6 +3,7 @@ cutting_tools.scad
 
 Series of parametric tools intended for cutting shapes
 */
+use<openscad-utilities/tools.scad>;
 
 infinity_=10000;
 
@@ -37,6 +38,37 @@ module fluted_circle_inverse(n, width, d) {
     };
 }
 
+/*
+class cylinder:
+    float diameter
+    list[float, float, float] position
+    float length
+*/
+
+/*
+    N number of cylinders each stacked on each other. The first
+    entry is the top cylinder and proceed down the top is 0 and the end is negative.
+    
+    ["diameter", ${DIAMETER}], ["height", ${LENGTH}] 
+    
+    multitier_cylinders = [
+    [["diameter", 10], ["height", 100]],
+    [["diameter", 5], ["height", 100]],
+];
+
+make_multitier_cylinders(multitier_cylinders);
+*/
+
+module make_multitier_cylinders(cylinders) {
+    heights = [for (pt=cylinders) dict_lookup("height", pt)];
+    for(i=[0:len(cylinders)-1]) {
+        pt = cylinders[i];
+        height = sum(partial(heights,0,i));
+            translate([0,0,-height])
+            rotate([180,0,0])
+            cylinder(d=dict_lookup("diameter", pt), h=dict_lookup("height", pt), center=false);
+    };
+};
 
 /*
 rectangles start from inner circle and head out
