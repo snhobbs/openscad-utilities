@@ -3,7 +3,7 @@ file: shapes.scad
 description: abstract solid 2D shapes intended to allow passing of a part description as an argument.
 */
 use <openscad-utilities/vector-file.scad>;
-use <openscad-utilities/rounded_rectangle.scad>;
+//use <openscad-utilities/rounded_rectangle.scad>;
 use <openscad-utilities/tools.scad>;
 
 /*
@@ -13,6 +13,29 @@ class Shape:
   list args;  //  argument to pass to subtype
 */
 
+module rounded_rectangle(args) {
+    /*
+        Make a rounded rectangle by putting circles at the corner of an inner rectangle
+        where the furthest extent of the x and y position are at the limits of the rectangle.
+        Merge this with 2 rectangles which meet these circles at this appex.
+    */
+    bounding_box = args.x;
+    diameter = args.y;
+    circle_center_square = [bounding_box.x-diameter, bounding_box.y
+    -diameter];
+    inner_square = [circle_center_square.x+diameter/sqrt(2), circle_center_square.y+diameter/sqrt(2)];
+    union() {
+        for(p = [[1,1],[1,-1],[-1,1],[-1,-1]]) {
+            translate([circle_center_square.x/2*p.x, circle_center_square.y/2*p.y])circle(d=diameter);
+        };
+        square([bounding_box.x, circle_center_square.y], true);
+        square([circle_center_square.x, bounding_box.y], true);
+    };
+};
+
+
+rounded_rectangle([[10,10],3]);
+$fn=64;
 module square_with_corner_reliefs(args) {
   /*
   :param list[list[float x, float y], float corner_diameter] args
