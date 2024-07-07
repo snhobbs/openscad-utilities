@@ -19,8 +19,12 @@ module rounded_rectangle(args) {
         where the furthest extent of the x and y position are at the limits of the rectangle.
         Merge this with 2 rectangles which meet these circles at this appex.
     */
+    assert(is_list(args));
+    assert(is_list(args.x));
+    assert(is_num(args.y));
     bounding_box = args.x;
     diameter = args.y;
+
     circle_center_square = [bounding_box.x-diameter, bounding_box.y
     -diameter];
     inner_square = [circle_center_square.x+diameter/sqrt(2), circle_center_square.y+diameter/sqrt(2)];
@@ -70,8 +74,14 @@ module make_shape_square_with_corner_reliefs(args) {
 };
 
 module make_shape_rounded_rectangle(args) {
+    assert(is_list(args));
     size = dict_lookup("size", args);
-    rounded_rectangle(width=size.x, height=size.y, rounding=dict_lookup("corner_diameter", args));
+    d = dict_lookup("corner_diameter", args);
+    assert(is_list(size));
+    assert(is_num(d));
+    //  rounded_rectangle(width=size.x, height=size.y, rounding=dict_lookup("corner_diameter", args));
+    args = [size, d];
+    rounded_rectangle(args);
 };
 
 function check_shape(shape) = is_list(shape) && is_string(dict_lookup("name", shape)) && is_list(shape[1]);

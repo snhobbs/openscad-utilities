@@ -11,7 +11,7 @@ Class VectorFile
     float convexity
 */
 function check_vector_image_object(obj) = 
-    assert(is_list(obj), str("Arguement isn't a list ", obj))
+    assert(is_list(obj), str("Argument isn't a list ", obj))
     is_string(dict_lookup("name", obj))     &&
     is_num(dict_lookup("rotation", obj))    &&
     is_list(dict_lookup("axis", obj))    &&
