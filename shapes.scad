@@ -94,9 +94,11 @@ Makes a 2D shape object
 module make_shape(shape) {
     assert(is_list(shape));
     name = dict_lookup("name", shape);
+    assert(is_string(name));
+    assert(name=="Shape");
     args = shape[1];
     assert(is_list(args));
-    assert(is_string(name));
+    assert(len(args) > 1);
     if (name == "square") {
         make_shape_square(args);
     } else if (name == "square_with_corner_reliefs") {
