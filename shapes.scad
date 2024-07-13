@@ -84,7 +84,7 @@ module make_shape_rounded_rectangle(args) {
     rounded_rectangle(args);
 };
 
-function check_shape(shape) = is_list(shape) && is_string(dict_lookup("name", shape)) && is_list(shape[1]);
+function check_shape(shape) = is_list(shape) && is_string(dict_lookup("name", shape)) && is_string(dict_lookup("type", shape)) && is_list(dict_lookup("arguments", shape));
 
 /*
 Makes a 2D shape object
@@ -92,23 +92,21 @@ Makes a 2D shape object
 :param vector args: vector of arguments to the matching shape module.
 */
 module make_shape(shape) {
-    assert(is_list(shape));
-    name = dict_lookup("name", shape);
-    args = shape[1];
-    assert(is_list(args));
-    assert(is_string(name));
-    if (name == "square") {
+    assert(check_shape(shape));
+    type = dict_lookup("type", shape);
+    args = dict_lookup("arguments", shape);
+    if (type == "square") {
         make_shape_square(args);
-    } else if (name == "square_with_corner_reliefs") {
+    } else if (type == "square_with_corner_reliefs") {
         make_shape_square_with_corner_reliefs(args);
-    } else if (name == "rounded_rectangle") {
+    } else if (type == "rounded_rectangle") {
         make_shape_rounded_rectangle(args);
-    } else if (name == "circle") {
+    } else if (type == "circle") {
         make_shape_circle(args);
-    } else if(name == "none") {
-    } else if(name == "vector") {
+    } else if(type == "none") {
+    } else if(type == "vector") {
         make_shape_vector(args);
-    } else if(name == "svg-supports") {
+    } else if(type == "svg-supports") {
       assert(0, "Not implemented");
     } else {
         echo(shape);
@@ -118,6 +116,7 @@ module make_shape(shape) {
 
 
 module make_shape_with_holes(shape, holes) {
+    assert(check_shape(shape));
     difference() {
         make_shape(shape);
         for(hole=holes)translate([hole[1].x, hole[1].y])      circle(d=hole[0]);

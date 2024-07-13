@@ -3,7 +3,7 @@
   description: Expressive functions for 2D shapes and alterations to them.
 */
 
-use<openscad-utilities/rounded_rectangle.scad>
+use<openscad-utilities/shapes.scad>
 module square_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20,-30]]], center=true) {
     difference() {
         square([size[0], size[1]], center=center);
@@ -14,7 +14,7 @@ module square_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20,-30]]], ce
 module rounded_rectangle_with_holes(size=[100,100], holes=[[3, [20,30]], [3, [20,-30]]], diameter=6, center=true) {
     assert(center==true);
     difference() {
-        rounded_rectangle(width=size.x, height=size.y, rounding=diameter);
+        rounded_rectangle([size, diameter]);
         for(hole=holes)translate([hole[1][0], hole[1][1]])circle(d=hole[0]);
     };
 };

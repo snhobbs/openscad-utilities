@@ -22,7 +22,8 @@ function check_vector_image_object(obj) =
     
 
 module make_vector_image(arguments) {
-    vector_image = arguments[0];
+    echo(arguments);
+    vector_image = arguments;
     assert(check_vector_image_object(vector_image));
     module make_vector_image_(vector_image) {
         center = dict_lookup("center", vector_image);
