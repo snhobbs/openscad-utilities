@@ -95,6 +95,10 @@ module make_shape(shape) {
     assert(check_shape(shape));
     type = dict_lookup("type", shape);
     args = dict_lookup("arguments", shape);
+    name = dict_lookup("name", shape);
+    assert(is_string(name));
+    assert(name=="Shape");
+
     if (type == "square") {
         make_shape_square(args);
     } else if (type == "square_with_corner_reliefs") {
