@@ -18,6 +18,7 @@ module rounded_rectangle(args) {
         Make a rounded rectangle by putting circles at the corner of an inner rectangle
         where the furthest extent of the x and y position are at the limits of the rectangle.
         Merge this with 2 rectangles which meet these circles at this appex.
+    :param list[[x,y], d]
     */
     assert(is_list(args));
     assert(is_list(args.x));
