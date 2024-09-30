@@ -101,7 +101,12 @@ assert(mdot([1,2,3], matrix[5]) == [-3,-1,-2]);
 assert(cross([1,0,0], [0,1,0]) == [0,0,1]);
 
 
-    function get_upright_face_matrix() = [
+/*
+ Right: Looking down -x
+ Front: Looking down +z
+
+*/
+function get_upright_face_matrix() = [
     ["top", 
     [[ 1,0,0], 
      [ 0,1,0], 
@@ -109,14 +114,14 @@ assert(cross([1,0,0], [0,1,0]) == [0,0,1]);
     ["bottom", 
     [[-1,0,0], 
      [0,-1,0], 
-     [0,0,1]]],  // bottom
+     [0,0,-1]]],  // bottom
     ["front", 
     [[ -1,0,0], 
-     [ 0,0,1], 
+     [ 0,0,-1], 
      [ 0,1,0]]],  // front
     ["back", 
     [[1,0,0],
-     [0,0,-1], 
+     [0,0,1], 
      [0,1,0]]],  // back
     ["right", 
     [[ 0,0,1], 
@@ -131,8 +136,8 @@ assert(cross([1,0,0], [0,1,0]) == [0,0,1]);
 function get_face_normal_vectors() = [
     ["top", [0,0,1]],
     ["bottom", [0,0,-1]],
-    ["front", [0,1,0]],
-    ["back", [0,-1,0]],
+    ["front", [0,-1,0]],
+    ["back", [0,1,0]],
     ["right", [1,0,0]],
     ["left", [-1,0,0]],
 ];
@@ -140,8 +145,8 @@ function get_face_normal_vectors() = [
 function get_face_upright_rotation_vectors() = [
     ["top", [0,0,0]],
     ["bottom", [180,0,0]],
-    ["front", [90,0,180]],
-    ["back", [90,0,0]],
+    ["back", [90,0,180]],
+    ["front", [90,0,0]],
     ["right", [90,0,90]],
     ["left", [90,0,-90]],
 ];
@@ -150,7 +155,7 @@ module place_on_face(face_center_positions, face, position, rotation) {
     /*
         Make a stamp out of a 2D child. Position on the given face with the transformations
         relative to that plane.
-        :param face_center_positions: dict of [{face}, [normal_vector, rotation_vector, plane center, ]]
+        :param face_center_positions: dict of [{face}, [normal_vector, rotation_vector, plane center]]
     */
     assert(is_string(face));
     assert(is_list(face_center_positions));
