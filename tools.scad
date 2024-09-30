@@ -84,3 +84,114 @@ Some value way larger than our largest geometry
 function get_infinity() = 1000;
 
 function all(lst) = sum([for(pt=lst) pt ? 1 : 0]) == len(lst);
+
+
+function dot(v1,v2) = assert(is_list(v1)&&is_list(v2)&&(len(v1)==len(v2))) sum([for (i=[0:len(v1)-1]) v1[i]*v2[i]]);
+function mdot(v,m) = assert(is_list(v)&&is_list(m)&&(len(m)==len(v))) [for (i=[0:len(m)-1]) dot(v,m[i])];
+
+assert(dot([1,1,1], [1,1,1]) == 3);
+assert(dot([1,0,0], [1,1,1]) == 1);
+assert(mdot([1,1,1], matrix[0]) == [1,1,1]);
+assert(mdot([1,2,3], matrix[0]) == [1,2,3]);
+assert(mdot([1,2,3], matrix[1]) == [-1,-2,-3]);
+assert(mdot([1,2,3], matrix[2]) == [1,3,2]);
+assert(mdot([1,2,3], matrix[3]) == [-1,-3,-2]);
+assert(mdot([1,2,3], matrix[4]) == [3,1,2]);
+assert(mdot([1,2,3], matrix[5]) == [-3,-1,-2]);
+assert(cross([1,0,0], [0,1,0]) == [0,0,1]);
+
+
+    function get_upright_face_matrix() = [
+    ["top", 
+    [[ 1,0,0], 
+     [ 0,1,0], 
+     [ 0,0,1]]],  // top
+    ["bottom", 
+    [[-1,0,0], 
+     [0,-1,0], 
+     [0,0,1]]],  // bottom
+    ["front", 
+    [[ -1,0,0], 
+     [ 0,0,1], 
+     [ 0,1,0]]],  // front
+    ["back", 
+    [[1,0,0],
+     [0,0,-1], 
+     [0,1,0]]],  // back
+    ["right", 
+    [[ 0,0,1], 
+     [ 1,0,0], 
+     [ 0,1,0]]],  // right
+    ["left", 
+    [[0,0,-1], 
+     [-1,0,0], 
+     [0,1,0]]],  // left
+];
+
+function get_face_normal_vectors() = [
+    ["top", [0,0,1]],
+    ["bottom", [0,0,-1]],
+    ["front", [0,1,0]],
+    ["back", [0,-1,0]],
+    ["right", [1,0,0]],
+    ["left", [-1,0,0]],
+];
+
+function get_face_upright_rotation_vectors() = [
+    ["top", [0,0,0]],
+    ["bottom", [180,0,0]],
+    ["front", [90,0,180]],
+    ["back", [90,0,0]],
+    ["right", [90,0,90]],
+    ["left", [90,0,-90]],
+];
+
+module place_on_face(face_center_positions, face, position, rotation) {
+    /*
+        Make a stamp out of a 2D child. Position on the given face with the transformations
+        relative to that plane.
+        :param face_center_positions: dict of [{face}, [normal_vector, rotation_vector, plane center, ]]
+    */
+    assert(is_string(face));
+    assert(is_list(face_center_positions));
+    assert(is_list(position));
+    assert(is_num(rotation));
+    m = dict_lookup(face, get_upright_face_matrix());
+    plane_position = mdot(position, m);
+
+    face_center_position = dict_lookup(face, face_center_positions);
+    setup_rotation = dict_lookup(face, get_face_upright_rotation_vectors());
+    normal_vector = dict_lookup(face, get_face_normal_vectors());
+
+    translate(plane_position)translate(face_center_position)
+        rotate(rotation, normal_vector)rotate(a=setup_rotation)
+        linear_extrude(get_infinity(), center=false)children();
+};
+
+
+function get_fonts() = ["C059",
+    "Century Schoolbook L",
+    "D050000L",
+    "DejaVu Sans",
+    "DejaVu Sans Monostyles",
+    "DejaVu Serif",
+    "Dingbats",
+    "Droid Sans Fallback L",
+    "Nimbus Mono L",
+    "Nimbus Mono PS",
+    "Nimbus Roman",
+    "Nimbus Roman No9 L",
+    "Nimbus Sans",
+    "Nimbus Sans L",
+    "Nimbus Sans Narrow",
+    "Noto Mono",
+    "P052",
+    "Standard Symbols L",
+    "Standard Symbols PS",
+    "URW Bookman",
+    "URW Bookman L",
+    "URW Chancery L",
+    "URW Gothic",
+    "URW Gothic L",
+    "URW Palladio L",
+    "Z003"];
