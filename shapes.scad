@@ -10,7 +10,7 @@ use <openscad-utilities/tools.scad>;
 class Shape:
   string name = "Shape";  //  part type
   string type;  //  subclass
-  list args;  //  argument to pass to subtype
+  ... Each shape then defines additional characteristics
 */
 
 module rounded_rectangle(args) {
@@ -20,64 +20,66 @@ module rounded_rectangle(args) {
         Merge this with 2 rectangles which meet these circles at this appex.
     :param list[[x,y], d]
     */
-    assert(is_list(args));
-    assert(is_list(args.x));
-    assert(is_num(args.y));
-    bounding_box = args.x;
-    diameter = args.y;
 
-    circle_center_square = [bounding_box.x-diameter, bounding_box.y
+    size = args.x;
+    diameter = args.y;
+    circle_center_square = [size.x-diameter, size.y
     -diameter];
     inner_square = [circle_center_square.x+diameter/sqrt(2), circle_center_square.y+diameter/sqrt(2)];
     union() {
         for(p = [[1,1],[1,-1],[-1,1],[-1,-1]]) {
             translate([circle_center_square.x/2*p.x, circle_center_square.y/2*p.y])circle(d=diameter);
         };
-        square([bounding_box.x, circle_center_square.y], true);
-        square([circle_center_square.x, bounding_box.y], true);
+        square([size.x, circle_center_square.y], true);
+        square([circle_center_square.x, size.y], true);
     };
 };
 
 
-rounded_rectangle([[10,10],3]);
-$fn=64;
-module square_with_corner_reliefs(args) {
+module square_with_corner_reliefs(shape) {
   /*
   :param list[list[float x, float y], float corner_diameter] args
   */
-    size = args.x;
-    corner_diameter = args.y;
+    size = dict_lookup("size", shape);
+    corner_radius = dict_lookup("corner_radius", shape);
+    
     union() {
         square(size, center=true);
         for(pt = [[-1,-1],[1,-1],[-1,1],[1,1]]) {
             translate([
-                pt.x*(size.x/2-corner_diameter/2/sqrt(2)),
-                pt.y*(size.y/2-corner_diameter/2/sqrt(2))])
-                    circle(d=corner_diameter);
+                pt.x*(size.x/2-corner_radius/sqrt(2)),
+                pt.y*(size.y/2-corner_radius/sqrt(2))])
+                    circle(d=2*corner_radius);
         }
     };
 };
 
-module make_shape_square(args) {
-    square([args.x, args.y], center=args.z);
+module make_shape_square(shape) {
+    square(
+        [dict_lookup("width", shape), dict_lookup("length", shape)], 
+        center=dict_lookup("center", shape));
 };
 
-module make_shape_circle(args) {
-    circle(d=args.x, fn=args.y);
+module make_shape_circle(shape) {
+    circle(d=dict_lookup("diameter", shape), 
+           fn=dict_lookup("fn", shape));
 };
 
-module make_shape_vector(args) {
-    make_vector_image(args);
+module make_shape_vector(shape) {
+    make_vector_image(shape);
 };
 
-module make_shape_square_with_corner_reliefs(args) {
-    square_with_corner_reliefs(args);
+module make_shape_square_with_corner_reliefs(shape) {
+    square_with_corner_reliefs(shape);
 };
 
-module make_shape_rounded_rectangle(args) {
-    assert(is_list(args));
-    size = dict_lookup("size", args);
-    d = dict_lookup("corner_diameter", args);
+module make_shape_rounded_rectangle(shape) {
+    assert(is_list(shape));
+    
+    size = dict_lookup("size", shape);
+    echo(size);
+    d = dict_lookup("corner_radius", shape)*2;
+
     assert(is_list(size));
     assert(is_num(d));
     //  rounded_rectangle(width=size.x, height=size.y, rounding=dict_lookup("corner_diameter", args));
@@ -85,7 +87,7 @@ module make_shape_rounded_rectangle(args) {
     rounded_rectangle(args);
 };
 
-function check_shape(shape) = is_list(shape) && is_string(dict_lookup("name", shape)) && is_string(dict_lookup("type", shape)) && is_list(dict_lookup("arguments", shape));
+function check_shape(shape) = is_list(shape) && is_string(dict_lookup("name", shape)) && is_string(dict_lookup("type", shape));
 
 /*
 Makes a 2D shape object
@@ -94,23 +96,22 @@ Makes a 2D shape object
 */
 module make_shape(shape) {
     assert(check_shape(shape));
-    type = dict_lookup("type", shape);
-    args = dict_lookup("arguments", shape);
-    name = dict_lookup("name", shape);
+    type = get(shape, "type");
+    name = get(shape, "name");
     assert(is_string(name));
     assert(name=="Shape");
 
     if (type == "square") {
-        make_shape_square(args);
+        make_shape_square(shape);
     } else if (type == "square_with_corner_reliefs") {
-        make_shape_square_with_corner_reliefs(args);
+        make_shape_square_with_corner_reliefs(shape);
     } else if (type == "rounded_rectangle") {
-        make_shape_rounded_rectangle(args);
+        make_shape_rounded_rectangle(shape);
     } else if (type == "circle") {
-        make_shape_circle(args);
+        make_shape_circle(shape);
     } else if(type == "none") {
     } else if(type == "vector") {
-        make_shape_vector(args);
+        make_shape_vector(shape);
     } else if(type == "svg-supports") {
       assert(0, "Not implemented");
     } else {
@@ -124,7 +125,7 @@ module make_shape_with_holes(shape, holes) {
     assert(check_shape(shape));
     difference() {
         make_shape(shape);
-        for(hole=holes)translate([hole[1].x, hole[1].y])      circle(d=hole[0]);
+        for(hole=holes) translate([dict_lookup("x", hole), dict_lookup("y", hole)]) circle(d=dict_lookup("diameter", hole));
     };
 };
 
@@ -140,3 +141,7 @@ module make_transformed_shape(shape, rotated=0, mirrored=false, position=[0,0]) 
     translate([position.x, position.y])
     make_shape(shape);
 };
+
+make_shape([["name", "Shape"], ["type", "rounded_rectangle"], ["size", [10.0, 10.0]], ["corner_radius", 1.0]]);
+$fn=64;
+
