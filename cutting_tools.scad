@@ -36,17 +36,22 @@ is also a circle.
 */
 module cut_fluted_cylinder(tool) {
     n = get(tool, "n_flutes");
-    width = get(tool, "width");
+    flute_width_ratio = get(tool, "flute_width_ratio");
     d = get(tool, "diameter");
+    width = flute_width_ratio*d/2;
+    height = get(tool, "height");
     module circular_rectangles(n, width) {
         union() {
             for (i=[0:(n-1)]) {
-                rotate((360/n)*i)translate([0, -width/2])square([infinity_,width], center=false);
+                rotate((360/n)*i)
+                translate([0, -width/2])
+                square([height,width], center=false);
             };
             circle(d=width);
         };
     };
-    
+
+    linear_extrude(height)
     intersection() {
         union() {
             circular_rectangles(n, width);
