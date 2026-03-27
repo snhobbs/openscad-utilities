@@ -61,8 +61,8 @@ module make_shape_square(shape) {
 };
 
 module make_shape_circle(shape) {
-    circle(d=dict_lookup("diameter", shape), 
-           fn=dict_lookup("fn", shape));
+    circle(d=get(shape, "diameter"), 
+           $fn=get(shape, "fn"));
 };
 
 module make_shape_vector(shape) {
